@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project RAAS - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="rag_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div class="background-mesh"></div>
+
+    <div class="app-container">
+        <!-- Login Section -->
+        <div id="login-container" class="glass-card login-card">
+            <h1>Welcome Back</h1>
+            <p>Please enter your access key</p>
+
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="Enter password" autocomplete="off">
+                <div class="input-line"></div>
+            </div>
+
+            <button id="login-btn" class="glow-on-hover">Access System</button>
+            <p id="error-msg" class="error-msg hidden">Access Denied</p>
+        </div>
+
+        <!-- Dashboard Section (Hidden Initially) -->
+        <div id="dashboard-container" class="dashboard hidden">
+            <header>
+                <h2>Project RAAS</h2>
+                <nav class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="tab-training">Treinamento</button>
+                    <button class="tab-btn" data-tab="tab-process-creator">Criador de Processos</button>
+                    <button class="tab-btn" data-tab="tab-doc-storage">Armazenador de Documentos</button>
+                </nav>
+                <div class="user-profile">
+                    <span>Admin</span>
+                </div>
+            </header>
+            <main>
+                <!-- Training Tab (Default) -->
+                <section id="tab-training" class="tab-content active-content">
+                    <div class="glass-card full-width">
+                        <h1>Avaliação do Modelo RAG</h1>
+                        <p>Analyze and provide feedback on model responses.</p>
+
+                        <div id="training-data-container" class="rag-grid">
+                            <!-- Data will be populated here via JS -->
+                            <div class="loading-spinner">Loading data...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Process Creator Tab -->
+                <section id="tab-process-creator" class="tab-content hidden-content">
+                    <div class="glass-card full-width" style="height: 100%; display: flex; flex-direction: column;">
+                        <h1>Criador de Processos</h1>
+                        <p>Upload files to start a new process.</p>
+
+                        <div class="upload-center-container">
+                            <div id="upload-zone" class="upload-zone">
+                                <input type="file" id="file-input" multiple hidden>
+                                <svg class="upload-icon" viewBox="0 0 24 24">
+                                    <path
+                                        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+                                </svg>
+                                <div class="upload-text">
+                                    <h3>Click or Drag files here</h3>
+                                    <p>Supported: Images, PDF, Video, Audio, Docs</p>
+                                </div>
+                            </div>
+
+                            <!-- Button Area -->
+                            <button id="btn-upload-send" class="glow-on-hover small-btn"
+                                style="width: 100%; max-width: 300px; margin-top: 20px;">
+                                Enviar Arquivos
+                            </button>
+
+                            <!-- Gemini Analysis Loader (Hidden by default) -->
+                            <div id="gemini-loader" class="gemini-loader hidden">
+                                <div class="gemini-logo-container">
+                                    <img src="gemini_icon.png" class="gemini-sparkle" alt="Gemini Loading Logo">
+                                </div>
+                                <div class="loading-text">
+                                    <span>Analisando</span><span class="dot-pulse">...</span>
+                                </div>
+                            </div>
+
+                            <!-- File List Area -->
+                            <!-- File List Area -->
+                            <div id="drafts-section" class="drafts-container hidden">
+                                <h3
+                                    style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px; text-align: left; padding-left: 10px;">
+                                    Arquivos editáveis que ainda não foram enviados
+                                </h3>
+                                <div id="upload-file-list" class="upload-file-list">
+                                    <!-- Files will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                </section>
+
+                <!-- Document Storage Tab -->
+                <section id="tab-doc-storage" class="tab-content hidden-content">
+                    <div class="glass-card full-width">
+                        <h1>Armazenador de Documentos</h1>
+                        <p>Securely store and retrieve your files.</p>
+                        <div class="file-list">
+                            <div class="file-item glass-card">Document A.pdf</div>
+                            <div class="file-item glass-card">Report 2024.docx</div>
+                            <div class="file-item glass-card">Data Sheet.xlsx</div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-wrapper">
+                <!-- Left Chat Panel -->
+                <div id="gemini-chat-panel" class="chat-panel">
+                    <div class="chat-header">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                        <span>Gemini Helper</span>
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-bubble">
+                            Manda sua ideia que eu vou detalhar ela para você e deixá-la mais completa possível!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Panel -->
+                <div class="main-modal-panel">
+                    <div class="modal-header">
+                        <h2>Melhorar Resposta</h2>
+                    </div>
+
+                    <div class="modal-message">
+                        Entendemos que a resposta pode não ter sido satisfatória, mas faz parte para treinar a
+                        Inteligência
+                        Artificial que você de a resposta correta!
+                    </div>
+
+                    <div class="question-box">
+                        <label>Pergunta Original:</label>
+                        <div id="modal-question-text" class="question-text">
+                            <!-- Question text injected here -->
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <textarea id="modal-human-response" class="human-input"
+                            placeholder="Escreva aqui a resposta correta..."></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <!-- Left Action: Gemini Helper -->
+                        <button type="button" id="btn-gemini-help" class="btn-gemini" onclick="toggleGeminiChat()">
+                            <img src="gemini_logo.png" alt="Gemini Logo" class="gemini-icon">
+                            Auxiliar de respostas
+                        </button>
+
+                        <!-- Right Actions -->
+                        <div class="right-actions">
+                            <button type="button" class="btn-cancel" onclick="closeFeedbackModal()">Cancelar</button>
+                            <button type="button" class="btn-submit" onclick="submitFeedback()">Enviar e
+                                treinar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Response Modal -->
+    <div id="response-modal" class="modal-overlay">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2>Resultado do Processamento</h2>
+                <button class="btn-cancel" onclick="closeResponseModal()"
+                    style="border:none;background:none;color:var(--text-secondary);cursor:pointer;font-size:1.5rem;">&times;</button>
+            </div>
+
+            <div class="modal-message">
+                Confira abaixo o resultado processado:
+            </div>
+
+            <!-- New Filename Field -->
+            <div class="input-area" style="flex: 0; margin-bottom: 10px;">
+                <label for="modal-filename"
+                    style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 5px; display: block;">Nome do
+                    Arquivo:</label>
+                <input type="text" id="modal-filename" class="filename-input">
+            </div>
+
+            <div class="input-area">
+                <textarea id="response-text-area" class="human-input" placeholder="Aguardando resultado..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="finish-btn" onclick="finishProcess()">
+                    Concluir Processo
+                </button>
+                <button type="button" class="btn-submit" onclick="copyResponseText()">Copiar Texto</button>
+                <button type="button" class="btn-cancel" onclick="closeResponseModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast hidden">Processo Criado com sucesso!</div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

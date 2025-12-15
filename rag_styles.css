@@ -1,0 +1,391 @@
+/* RAG Grid Styles */
+.rag-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.rag-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    /* Changed to 3 columns */
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.rag-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.rag-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rag-col h3 {
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rag-col p {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    height: 100%;
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+/* Feedback Section */
+.feedback-box {
+    margin-top: auto;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.8rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.feedback-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.feedback-btns {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-feedback {
+    padding: 6px 15px;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-yes:hover,
+.btn-yes.active {
+    background: rgba(46, 204, 113, 0.2);
+    border-color: #2ecc71;
+    color: #2ecc71;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
+
+.btn-no:hover,
+.btn-no.active {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Scrollbar for text areas */
+.rag-col p::-webkit-scrollbar,
+.human-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rag-col p::-webkit-scrollbar-track,
+.human-input::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rag-col p::-webkit-scrollbar-thumb,
+.human-input::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.rag-col p::-webkit-scrollbar-thumb:hover,
+.human-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active-modal {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: rgba(23, 23, 23, 0.95);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    /* Default width */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    overflow: hidden;
+    /* For sidebar animation */
+}
+
+/* Expanded state when chat is open */
+.modal-content.expanded {
+    max-width: 900px;
+}
+
+.modal-overlay.active-modal .modal-content {
+    transform: scale(1);
+}
+
+/* Layout Wrapper */
+.modal-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Main Panel */
+.main-modal-panel {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+    /* Prevents overflow */
+}
+
+/* Chat Panel */
+.chat-panel {
+    width: 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid var(--glass-border);
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-panel.active-panel {
+    width: 320px;
+    opacity: 1;
+    padding: 1.5rem;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+
+.chat-header svg {
+    width: 20px;
+    height: 20px;
+    fill: #888;
+}
+
+.chat-bubble {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 1rem;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Existing Modal Elements (Scoped to main panel if needed, but classes work globally within modal) */
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.modal-message {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+}
+
+.question-box {
+    margin: 1rem 0;
+}
+
+.question-box label {
+    display: block;
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.question-text {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.human-input {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    padding: 1rem;
+    resize: vertical;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.human-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    /* Changed for left button */
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.right-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-gemini {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-gemini:hover {
+    background: rgba(155, 89, 182, 0.2);
+    border-color: #9b59b6;
+    color: #e0b0ff;
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.3);
+}
+
+.gemini-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    filter: grayscale(100%) opacity(0.7);
+    transition: all 0.3s ease;
+}
+
+.btn-gemini:hover .gemini-icon {
+    filter: grayscale(0%) opacity(1);
+    transform: scale(1.1);
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.btn-submit {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-submit:hover {
+    background: #2ecc71;
+    border-color: #2ecc71;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+}

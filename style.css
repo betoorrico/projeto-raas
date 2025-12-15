@@ -1,0 +1,741 @@
+:root {
+    --bg-color: #0f0c29;
+    --bg-gradient: linear-gradient(300deg, #302b63, #24243e, #0f0c29);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.5);
+    --error: #ff4b4b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background: var(--bg-color);
+    background-image: var(--bg-gradient);
+    background-size: 300% 300%;
+    animation: gradientBG 15s ease infinite;
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Background Mesh Effect */
+.background-mesh {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.1) 0%, transparent 50%);
+    z-index: -1;
+}
+
+.app-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Glass Card Helper */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Login Section */
+.login-card {
+    padding: 3rem;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: translateY(0);
+    transition: all 0.4s ease;
+}
+
+.login-card h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.login-card p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
+}
+
+.input-line {
+    width: 100%;
+    height: 2px;
+    background: var(--glass-border);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus+.input-line {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.input-group input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+button.glow-on-hover {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+button.glow-on-hover:hover {
+    background: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+    color: #000;
+}
+
+.error-msg {
+    margin-top: 1rem;
+    color: var(--error);
+    font-size: 0.85rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.error-msg.hidden {
+    opacity: 0;
+}
+
+/* Dashboard Section */
+.dashboard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+}
+
+.dashboard.hidden {
+    display: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.dashboard h2 {
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+/* Tabs Navigation */
+.dashboard-tabs {
+    display: flex;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    border-radius: 50px;
+    border: 1px solid var(--glass-border);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--glass-bg);
+    color: var(--accent);
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.active-content {
+    display: flex;
+}
+
+.full-width {
+    width: 100%;
+    padding: 2rem;
+    min-height: 300px;
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.file-item {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.file-item:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.card {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-glow);
+}
+
+.small-btn {
+    width: auto;
+    padding: 0.8rem 2rem;
+    margin-top: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Shake Animation for Error */
+.shake {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+
+}
+}
+
+/* Upload Zone Styles */
+.upload-center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+}
+
+.upload-zone {
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    /* Take all available space */
+    min-height: 200px;
+    border: 2px dashed var(--glass-border);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.05);
+    transform: scale(1.01);
+}
+
+.upload-icon {
+    width: 64px;
+    height: 64px;
+    fill: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover .upload-icon {
+    fill: var(--accent);
+    transform: translateY(-5px);
+}
+
+.upload-text {
+    text-align: center;
+}
+
+.upload-text h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-text p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.upload-file-list {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.uploaded-file-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeIn 0.3s ease;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-type-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--accent);
+}
+
+.file-name {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.remove-file-btn {
+    background: transparent;
+    border: none;
+    color: var(--error);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+
+.remove-file-btn:hover {
+    background: rgba(255, 75, 75, 0.1);
+}
+
+.uploaded-file-item.processed {
+    border-color: #00fa9a;
+    /* Spring Green */
+    background: rgba(0, 250, 154, 0.05);
+    cursor: pointer;
+}
+
+.uploaded-file-item.processed:hover {
+    background: rgba(0, 250, 154, 0.1);
+    transform: translateX(5px);
+}
+
+.file-status-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    fill: #00fa9a;
+    display: none;
+}
+
+.uploaded-file-item.processed .file-status-icon {
+    display: block;
+}
+
+/* --- Gemini Loader Styles --- */
+.gemini-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.gemini-loader.hidden {
+    display: none;
+}
+
+.gemini-logo-container {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gemini-sparkle {
+    width: 60px;
+    height: 60px;
+    animation: gemini-spin 4s linear infinite, gemini-pulse 2s ease-in-out infinite alternate;
+}
+
+.loading-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: linear-gradient(90deg, #4E95FF, #DD58FF, #FF9E4E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.dot-pulse::after {
+    content: '';
+    animation: dot-pulse 1.5s infinite;
+}
+
+@keyframes gemini-spin {
+    0% {
+        transform: rotate(0deg) scale(0.9);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(0.9);
+    }
+}
+
+@keyframes gemini-pulse {
+    from {
+        opacity: 0.8;
+        filter: drop-shadow(0 0 10px rgba(78, 149, 255, 0.5));
+    }
+
+    to {
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(221, 88, 255, 0.8));
+    }
+}
+
+@keyframes dot-pulse {
+    0% {
+        content: '.';
+    }
+
+    33% {
+        content: '..';
+    }
+
+    66% {
+        content: '...';
+    }
+}
+
+/* -- Large Modal -- */
+/* -- Large Modal -- */
+/* -- Large Modal -- */
+.large-modal {
+    width: 98vw;
+    /* Max width */
+    height: 95vh;
+    /* Max height */
+    padding: 30px 20px;
+    /* Reduced side padding for wider text */
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-message {
+    text-align: center;
+    /* Center the text above textarea */
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+/* Custom Scrollbar for Textarea */
+.large-modal textarea::-webkit-scrollbar {
+    width: 12px;
+    /* Thicker scrollbar */
+}
+
+.large-modal textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.large-modal textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.large-modal textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* -- Drafts Container (Square box below upload) -- */
+.drafts-container {
+    width: 100%;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    /* Glass effect base */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    /* Give it some height to look like a "square" */
+}
+
+/* New Styles for Modal Optimization */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 30px;
+    /* More gap */
+    padding-top: 10px;
+}
+
+.finish-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    /* Larger button padding */
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.finish-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #00d2ff;
+    /* User Accent or Green? Let's use accent for consistency or green for success. User asked for "Processo Criado" - Green is usually better for success. */
+    background: #28a745;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    font-weight: 600;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.hidden {
+    display: block;
+    /* Override default hidden to allow transform transition, visibility handled by opacity/transform mostly, but we can stick to class toggling */
+    /* Actually better to use visibility: hidden for accessibility when off screen */
+    visibility: hidden;
+}
+
+.toast.show {
+    visibility: visible;
+}
+
+.drafts-container.hidden {
+    display: none;
+}
+
+.large-modal .input-area {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Specific rule for the textarea container to make it fill space */
+.large-modal .input-area:has(textarea) {
+    flex: 1;
+}
+
+/* Specific rule for filename container to NOT expand */
+.large-modal .input-area:has(input) {
+    flex: 0 0 auto;
+    margin-bottom: 15px;
+}
+
+.large-modal .input-area:last-of-type {
+    flex: 1;
+    /* Only the last input area (textarea) should expand */
+    margin-bottom: 20px;
+}
+
+.large-modal textarea {
+    flex: 1;
+    resize: none;
+    font-size: 1.1rem;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.filename-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    /* Lighter bg for editable feel */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    font-size: 1rem;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.filename-input:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.15);
+}
