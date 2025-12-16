@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "description": "RAAS Project",
     "scripts": {},
-    "type": "module",
     "engines": {
         "node": "18.x"
     },

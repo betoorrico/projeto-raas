@@ -478,224 +478,212 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Change button text to indicate processing
                 const finishBtns = document.querySelectorAll('.finish-btn');
-                finishBtns.forEach(btn => {
-                    btn.disabled = true;
-                    btn.innerText = "Enviando...";
-                });
-
-                // Use internal Vercel API Proxy to avoid CORS
-                const response = await fetch('/api/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json', // Switching back to JSON as our Proxy handles it well
-                    },
-                    body: JSON.stringify({
-                        file_name: fileName,
-                        processo: contentText
-                    })
+                file_name: fileName,
+                    processo: contentText
+            })
                 });
 
 
-                // DEBUG: Verify response
-                // alert(`RESPOSTA SERVIDOR...`); // Removed
+// DEBUG: Verify response
+// alert(`RESPOSTA SERVIDOR...`); // Removed
 
-                if (response.ok) {
-                    showToast();
-                    if (currentModalFileIndex > -1) {
-                        removeFile(currentModalFileIndex);
-                    }
-                    closeResponseModal();
-                } else {
-                    const errText = await response.text();
-                    alert(`Erro ao salvar processo: ${errText}`);
-                }
+if (response.ok) {
+    showToast();
+    if (currentModalFileIndex > -1) {
+        removeFile(currentModalFileIndex);
+    }
+    closeResponseModal();
+} else {
+    const errText = await response.text();
+    alert(`Erro ao salvar processo: ${errText}`);
+}
             } catch (error) {
-                console.error("Finish process error:", error);
-                alert(`Erro de conexão: ${error.message}`);
-            } finally {
-                const finishBtns = document.querySelectorAll('.finish-btn');
-                finishBtns.forEach(btn => {
-                    btn.disabled = false;
-                    btn.innerText = "Concluir Processo";
+    console.error("Finish process error:", error);
+    alert(`Erro de conexão: ${error.message}`);
+} finally {
+    const finishBtns = document.querySelectorAll('.finish-btn');
+    finishBtns.forEach(btn => {
+        btn.disabled = false;
+        btn.innerText = "Concluir Processo";
+    });
+}
+        };
+
+window.closeResponseModal = function () {
+    const modal = document.getElementById('response-modal');
+    if (modal) {
+        modal.classList.remove('active-modal');
+    }
+};
+
+window.copyResponseText = function () {
+    const textArea = document.getElementById('response-text-area');
+    if (textArea) {
+        textArea.select();
+        navigator.clipboard.writeText(textArea.value)
+            .then(() => alert("Texto copiado!"))
+            .catch(err => console.error('Erro ao copiar:', err));
+    }
+};
+
+
+const btnSend = document.getElementById('btn-upload-send');
+
+if (btnSend) {
+    btnSend.addEventListener('click', submitFiles);
+}
+
+async function submitFiles() {
+    if (uploadedFiles.length === 0) {
+        alert("Por favor, selecione pelo menos um arquivo.");
+        return;
+    }
+
+    const WEBHOOK_URL = "https://webhook.manarafluxo.online/webhook/process";
+    const btnSend = document.getElementById('btn-upload-send');
+    const originalText = btnSend.innerText;
+
+    btnSend.disabled = true;
+    btnSend.innerText = "Preparando...";
+
+    try {
+        // 1. Initialize Supabase (re-using credentials from top of file scope if available, or redefining)
+        const SUPABASE_URL = 'https://wobnvubplojytzoxsilz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvYm52dWJwbG9qeXR6b3hzaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3MTU4MTYsImV4cCI6MjA3NTI5MTgxNn0.E7JaUENFdZC5Wk2BQ4QoJRu5PeL6KmHroY42A42RY0M';
+
+        // Ensure supabase client exists
+        const _client = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+        if (!_client) throw new Error("Supabase client library not found.");
+
+        const uploadPromises = uploadedFiles.map(async (file) => {
+            // Unique file name to avoid collisions
+            const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+
+            // Update Button Status
+            btnSend.innerText = `Enviando para Storage: ${file.name}...`;
+
+            // A. Upload to Supabase Storage
+            const { data, error } = await _client
+                .storage
+                .from('uploads')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false
                 });
-            }
-        };
 
-        window.closeResponseModal = function () {
-            const modal = document.getElementById('response-modal');
-            if (modal) {
-                modal.classList.remove('active-modal');
-            }
-        };
+            if (error) throw new Error(`Erro no upload para Supabase: ${error.message}`);
 
-        window.copyResponseText = function () {
-            const textArea = document.getElementById('response-text-area');
-            if (textArea) {
-                textArea.select();
-                navigator.clipboard.writeText(textArea.value)
-                    .then(() => alert("Texto copiado!"))
-                    .catch(err => console.error('Erro ao copiar:', err));
-            }
-        };
+            // B. Get Public URL
+            const { data: publicData } = _client
+                .storage
+                .from('uploads')
+                .getPublicUrl(fileName);
 
+            return publicData.publicUrl;
+        });
 
-        const btnSend = document.getElementById('btn-upload-send');
+        // Wait for all uploads
+        const publicUrls = await Promise.all(uploadPromises);
+        console.log("Generated Public URLs:", publicUrls);
+
+        // 2. Send URLs to Webhook (Using JSON for clear key-value transmission)
+        // UI: Switch to "Analisando" Loading State
+        const uploadZone = document.getElementById('upload-zone');
+        const fileList = document.getElementById('drafts-section'); // Updated ID
+        const loader = document.getElementById('gemini-loader');
+
+        if (uploadZone) uploadZone.classList.add('hidden');
+        // Keep list visible per user request
+        // if (fileList) fileList.classList.add('hidden'); 
 
         if (btnSend) {
-            btnSend.addEventListener('click', submitFiles);
-        }
-
-        async function submitFiles() {
-            if (uploadedFiles.length === 0) {
-                alert("Por favor, selecione pelo menos um arquivo.");
-                return;
-            }
-
-            const WEBHOOK_URL = "https://webhook.manarafluxo.online/webhook/process";
-            const btnSend = document.getElementById('btn-upload-send');
-            const originalText = btnSend.innerText;
-
+            // Keep button visible but disabled
+            // btnSend.classList.add('hidden'); 
             btnSend.disabled = true;
-            btnSend.innerText = "Preparando...";
-
-            try {
-                // 1. Initialize Supabase (re-using credentials from top of file scope if available, or redefining)
-                const SUPABASE_URL = 'https://wobnvubplojytzoxsilz.supabase.co';
-                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvYm52dWJwbG9qeXR6b3hzaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3MTU4MTYsImV4cCI6MjA3NTI5MTgxNn0.E7JaUENFdZC5Wk2BQ4QoJRu5PeL6KmHroY42A42RY0M';
-
-                // Ensure supabase client exists
-                const _client = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
-                if (!_client) throw new Error("Supabase client library not found.");
-
-                const uploadPromises = uploadedFiles.map(async (file) => {
-                    // Unique file name to avoid collisions
-                    const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-
-                    // Update Button Status
-                    btnSend.innerText = `Enviando para Storage: ${file.name}...`;
-
-                    // A. Upload to Supabase Storage
-                    const { data, error } = await _client
-                        .storage
-                        .from('uploads')
-                        .upload(fileName, file, {
-                            cacheControl: '3600',
-                            upsert: false
-                        });
-
-                    if (error) throw new Error(`Erro no upload para Supabase: ${error.message}`);
-
-                    // B. Get Public URL
-                    const { data: publicData } = _client
-                        .storage
-                        .from('uploads')
-                        .getPublicUrl(fileName);
-
-                    return publicData.publicUrl;
-                });
-
-                // Wait for all uploads
-                const publicUrls = await Promise.all(uploadPromises);
-                console.log("Generated Public URLs:", publicUrls);
-
-                // 2. Send URLs to Webhook (Using JSON for clear key-value transmission)
-                // UI: Switch to "Analisando" Loading State
-                const uploadZone = document.getElementById('upload-zone');
-                const fileList = document.getElementById('drafts-section'); // Updated ID
-                const loader = document.getElementById('gemini-loader');
-
-                if (uploadZone) uploadZone.classList.add('hidden');
-                // Keep list visible per user request
-                // if (fileList) fileList.classList.add('hidden'); 
-
-                if (btnSend) {
-                    // Keep button visible but disabled
-                    // btnSend.classList.add('hidden'); 
-                    btnSend.disabled = true;
-                    btnSend.innerText = "Analisando...";
-                }
-
-                if (loader) loader.classList.remove('hidden');
-
-                const payload = {
-                    file_url: publicUrls[0], // Explicit key user requested or standard
-                    timestamp: new Date().toISOString()
-                };
-
-                console.log("Sending Payload:", payload);
-
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                // 3. Handle Response - Modal ONLY opens here, after response is received
-                if (response.ok) {
-                    let jsonResponse;
-                    try {
-                        const text = await response.text();
-                        // Try to parse JSON, if it fails or is empty, fallback
-                        try {
-                            jsonResponse = text ? JSON.parse(text) : {};
-                            // Handle Array response (e.g. [{"output": "..."}])
-                            if (Array.isArray(jsonResponse) && jsonResponse.length > 0) {
-                                jsonResponse = jsonResponse[0];
-                            }
-                        } catch (e) {
-                            // Valid response but NOT JSON (e.g. plain text)
-                            jsonResponse = { output: text || "Processamento concluído (Sem detalhes)", message: "Success" };
-                        }
-                    } catch (e) {
-                        // Fallback generic
-                        jsonResponse = {};
-                    }
-
-                    console.log("Webhook Final Response:", jsonResponse);
-
-                    if (jsonResponse && jsonResponse.output) {
-                        // Store result in file object
-                        if (uploadedFiles.length > 0) {
-                            uploadedFiles[0].processedResult = jsonResponse.output;
-                        }
-                        openResponseModal(jsonResponse.output, 0);
-                    } else {
-                        // Support for likely N8N "response" key or root object
-                        const resultText = jsonResponse.message || jsonResponse.output || JSON.stringify(jsonResponse);
-                        if (uploadedFiles.length > 0) {
-                            uploadedFiles[0].processedResult = resultText;
-                        }
-                        openResponseModal(resultText, 0);
-                    }
-
-                    // DO NOT CLEAR uploadedFiles = []
-                    renderFileList();
-                } else {
-                    const text = await response.text();
-                    throw new Error(`Webhook erro ${response.status}: ${text}`);
-                }
-
-            } catch (error) {
-                console.error("Process error:", error);
-                alert(`Erro: ${error.message}`);
-            } finally {
-                // Restore UI
-                const uploadZone = document.getElementById('upload-zone');
-                const fileList = document.getElementById('drafts-section'); // Updated ID
-                const loader = document.getElementById('gemini-loader');
-
-                if (uploadZone) uploadZone.classList.remove('hidden');
-                // if (fileList) fileList.classList.remove('hidden'); // Always visible
-
-                if (btnSend) {
-                    // btnSend.classList.remove('hidden');
-                    btnSend.disabled = false;
-                    btnSend.innerText = originalText;
-                }
-
-                if (loader) loader.classList.add('hidden');
-            }
+            btnSend.innerText = "Analisando...";
         }
+
+        if (loader) loader.classList.remove('hidden');
+
+        const payload = {
+            file_url: publicUrls[0], // Explicit key user requested or standard
+            timestamp: new Date().toISOString()
+        };
+
+        console.log("Sending Payload:", payload);
+
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // 3. Handle Response - Modal ONLY opens here, after response is received
+        if (response.ok) {
+            let jsonResponse;
+            try {
+                const text = await response.text();
+                // Try to parse JSON, if it fails or is empty, fallback
+                try {
+                    jsonResponse = text ? JSON.parse(text) : {};
+                    // Handle Array response (e.g. [{"output": "..."}])
+                    if (Array.isArray(jsonResponse) && jsonResponse.length > 0) {
+                        jsonResponse = jsonResponse[0];
+                    }
+                } catch (e) {
+                    // Valid response but NOT JSON (e.g. plain text)
+                    jsonResponse = { output: text || "Processamento concluído (Sem detalhes)", message: "Success" };
+                }
+            } catch (e) {
+                // Fallback generic
+                jsonResponse = {};
+            }
+
+            console.log("Webhook Final Response:", jsonResponse);
+
+            if (jsonResponse && jsonResponse.output) {
+                // Store result in file object
+                if (uploadedFiles.length > 0) {
+                    uploadedFiles[0].processedResult = jsonResponse.output;
+                }
+                openResponseModal(jsonResponse.output, 0);
+            } else {
+                // Support for likely N8N "response" key or root object
+                const resultText = jsonResponse.message || jsonResponse.output || JSON.stringify(jsonResponse);
+                if (uploadedFiles.length > 0) {
+                    uploadedFiles[0].processedResult = resultText;
+                }
+                openResponseModal(resultText, 0);
+            }
+
+            // DO NOT CLEAR uploadedFiles = []
+            renderFileList();
+        } else {
+            const text = await response.text();
+            throw new Error(`Webhook erro ${response.status}: ${text}`);
+        }
+
+    } catch (error) {
+        console.error("Process error:", error);
+        alert(`Erro: ${error.message}`);
+    } finally {
+        // Restore UI
+        const uploadZone = document.getElementById('upload-zone');
+        const fileList = document.getElementById('drafts-section'); // Updated ID
+        const loader = document.getElementById('gemini-loader');
+
+        if (uploadZone) uploadZone.classList.remove('hidden');
+        // if (fileList) fileList.classList.remove('hidden'); // Always visible
+
+        if (btnSend) {
+            // btnSend.classList.remove('hidden');
+            btnSend.disabled = false;
+            btnSend.innerText = originalText;
+        }
+
+        if (loader) loader.classList.add('hidden');
+    }
+}
     }
 });
