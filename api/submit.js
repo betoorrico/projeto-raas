@@ -20,20 +20,13 @@ export default async function handler(req, res) {
     try {
         const payload = req.body;
 
-        console.log("Proxying payload to N8N:", payload);
-
-        // Convert JSON payload to URLSearchParams for N8N Form compliance
-        const formData = new URLSearchParams();
-        formData.append("file_name", payload.file_name);
-        formData.append("processo", payload.processo);
-
-        // Forward to N8N Webhook as Form
+        // Forward to N8N Webhook as JSON (Matching user's working example)
         const n8nResponse = await fetch('https://webhook.manarafluxo.online/form/7a1d3b19-d14a-421c-8c46-2315c8415017', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
-            body: formData
+            body: JSON.stringify(payload)
         });
 
         const data = await n8nResponse.text();
