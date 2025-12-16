@@ -682,60 +682,273 @@ header {
 .toast.show {
     visibility: visible;
 }
+}
+
+.gemini-logo-container {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gemini-sparkle {
+    width: 60px;
+    height: 60px;
+    animation: gemini-spin 4s linear infinite, gemini-pulse 2s ease-in-out infinite alternate;
+}
+
+.loading-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: linear-gradient(90deg, #4E95FF, #DD58FF, #FF9E4E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.dot-pulse::after {
+    content: '';
+    animation: dot-pulse 1.5s infinite;
+}
+
+@keyframes gemini-spin {
+    0% {
+        transform: rotate(0deg) scale(0.9);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(0.9);
+    }
+}
+
+@keyframes gemini-pulse {
+    from {
+        opacity: 0.8;
+        filter: drop-shadow(0 0 10px rgba(78, 149, 255, 0.5));
+    }
+
+    to {
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(221, 88, 255, 0.8));
+    }
+}
+
+@keyframes dot-pulse {
+    0% {
+        content: '.';
+    }
+
+    33% {
+        content: '..';
+    }
+
+    66% {
+        content: '...';
+    }
+}
+
+/* -- Large Modal -- */
+/* -- Large Modal -- */
+/* -- Large Modal -- */
+.modal-message {
+    text-align: center;
+    /* Center the text above textarea */
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+/* Custom Scrollbar for Textarea */
+.large-modal textarea::-webkit-scrollbar {
+    width: 12px;
+    /* Thicker scrollbar */
+}
+
+.large-modal textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.large-modal textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.large-modal textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* -- Drafts Container (Square box below upload) -- */
+.drafts-container {
+    width: 100%;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    /* Glass effect base */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    /* Give it some height to look like a "square" */
+}
+
+/* New Styles for Modal Optimization */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 30px;
+    /* More gap */
+    padding-top: 10px;
+}
+
+.finish-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    /* Larger button padding */
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.finish-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #00d2ff;
+    /* User Accent or Green? Let's use accent for consistency or green for success. User asked for "Processo Criado" - Green is usually better for success. */
+    background: #28a745;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    font-weight: 600;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.hidden {
+    display: block;
+    /* Override default hidden to allow transform transition, visibility handled by opacity/transform mostly, but we can stick to class toggling */
+    /* Actually better to use visibility: hidden for accessibility when off screen */
+    visibility: hidden;
+}
+
+.toast.show {
+    visibility: visible;
+}
 
 .drafts-container.hidden {
     display: none;
 }
 
-.large-modal .input-area {
+/* --- Grid Modal Redesign --- */
+
+.large-modal {
+    display: grid !important;
+    /* Force Grid */
+    grid-template-rows: auto auto 1fr auto;
+    /* Header, Filename, Textarea(Fill), Actions */
+    height: 90vh !important;
+    width: 90vw !important;
+    max-width: 1200px;
+    padding: 30px !important;
+    gap: 20px;
+    align-content: start;
+    overflow: hidden;
+    /* No scroll on modal, only in textarea */
+}
+
+/* Row 1: Header (Inherits existing styles) */
+
+/* Row 2: Filename Section */
+.modal-filename-section {
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    margin-bottom: 20px;
+    gap: 8px;
+}
+
+.modal-filename-section label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    padding-left: 5px;
+}
+
+.filename-input {
     width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
-/* Specific rule for the textarea container to make it fill space */
-.large-modal .input-area:has(textarea) {
-    flex: 1;
+.filename-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
 }
 
-/* Specific rule for filename container to NOT expand */
-.large-modal .input-area:has(input) {
-    flex: 0 0 auto;
-    margin-bottom: 15px;
-}
-
-.large-modal .input-area:last-of-type {
-    flex: 1;
-    /* Only the last input area (textarea) should expand */
-    margin-bottom: 20px;
+/* Row 3: Content Section (Expands) */
+.modal-content-section {
+    width: 100%;
+    height: 100%;
+    /* Fills the 1fr grid row */
+    overflow: hidden;
 }
 
 .large-modal textarea {
-    flex: 1;
+    width: 100%;
+    height: 100% !important;
+    /* Force full height of container */
     resize: none;
     font-size: 1.1rem;
     padding: 20px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     color: var(--text-primary);
+    line-height: 1.6;
+    overflow-y: auto;
+    /* Scroll inside textarea */
 }
 
-.filename-input {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    /* Lighter bg for editable feel */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-primary);
-    font-size: 1rem;
-    border-radius: 4px;
+.large-modal textarea:focus {
     outline: none;
-    transition: all 0.2s;
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.2);
 }
 
-.filename-input:focus {
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.15);
-}
+/* Row 4: Actions (Inherits existing styles) */

@@ -199,18 +199,18 @@
                 Confira abaixo o resultado processado:
             </div>
 
-            <!-- New Filename Field -->
-            <div class="input-area" style="flex: 0; margin-bottom: 10px;">
-                <label for="modal-filename"
-                    style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 5px; display: block;">Nome do
-                    Arquivo:</label>
+            <!-- Grid Row 2: Filename -->
+            <div class="modal-filename-section">
+                <label for="modal-filename">Nome do Arquivo:</label>
                 <input type="text" id="modal-filename" class="filename-input">
             </div>
 
-            <div class="input-area">
+            <!-- Grid Row 3: Content (Expands) -->
+            <div class="modal-content-section">
                 <textarea id="response-text-area" class="human-input" placeholder="Aguardando resultado..."></textarea>
             </div>
 
+            <!-- Grid Row 4: Actions -->
             <div class="modal-actions">
                 <button type="button" class="finish-btn" onclick="finishProcess()">
                     Concluir Processo
