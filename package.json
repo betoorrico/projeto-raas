@@ -3,5 +3,8 @@
     "version": "1.0.0",
     "description": "RAAS Project",
     "scripts": {},
+    "engines": {
+        "node": "18.x"
+    },
     "dependencies": {}
 }
