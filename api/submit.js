@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         const payload = req.body;
 
         // Forward to N8N Webhook as JSON (Matching user's working example)
-        const n8nResponse = await fetch('https://webhook.manarafluxo.online/form/7a1d3b19-d14a-421c-8c46-2315c8415017', {
+        const n8nResponse = await fetch('https://webhook.manarafluxo.online/webhook/coloca-processo-rag', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
